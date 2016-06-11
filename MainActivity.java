@@ -6,10 +6,12 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -87,14 +89,81 @@ public class MainActivity extends Activity
     Handler handler;
     private ConnectedThread mConnectedThread;
 
-    /*
-        Reverse engineering notes for MainActivity
 
-        synthetic access$0 - access to method String convertStringToHex(String)
-        synthetic access$1 - access to method void addMessage (String)
-        synthetic access$2 - access to field ConnectedThread mConnectedThread
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
 
-     */
+        if (resultCode == -1)
+        {
+            fn0 = data.getStringExtra ("FN0VALUE");
+            fn1 = data.getStringExtra ("FN1VALUE");
+            fn2 = data.getStringExtra ("FN2VALUE");
+            fn3 = data.getStringExtra ("FN3VALUE");
+            fn4 = data.getStringExtra ("FN4VALUE");
+            fn5 = data.getStringExtra ("FN5VALUE");
+
+            fnLabel0 = data.getStringExtra ("FUNCTEXT0");
+            fnLabel1 = data.getStringExtra ("FUNCTEXT1");
+            fnLabel2 = data.getStringExtra ("FUNCTEXT2");
+            fnLabel3 = data.getStringExtra ("FUNCTEXT3");
+            fnLabel4 = data.getStringExtra ("FUNCTEXT4");
+            fnLabel5 = data.getStringExtra ("FUNCTEXT5");
+
+            displayDateStamp = data.getBooleanExtra("CHECKVALUE", true);
+            displayHex = data.getBooleanExtra("OUTPUTHEX", false);
+            autoScroll = data.getBooleanExtra("AUTOSCROLL", true);
+
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putString("FUNCVALUE0", fn0);
+            editor.putString("FUNCVALUE1", fn1);
+            editor.putString("FUNCVALUE2", fn2);
+            editor.putString("FUNCVALUE3", fn3);
+            editor.putString("FUNCVALUE4", fn4);
+            editor.putString("FUNCVALUE5", fn5);
+
+            editor.putString("FUNCLABEL0", fnLabel0);
+            editor.putString("FUNCLABEL1", fnLabel1);
+            editor.putString("FUNCLABEL2", fnLabel2);
+            editor.putString("FUNCLABEL3", fnLabel3);
+            editor.putString("FUNCLABEL4", fnLabel4);
+            editor.putString("FUNCLABEL5", fnLabel5);
+
+            editor.putBoolean("CHECKBOX", displayDateStamp);
+            editor.putBoolean("OUTPUTHEX", displayHex);
+            editor.putBoolean("AUTOSCROLL", autoScroll);
+
+            editor.commit();
+        }
+        else if (resultCode == 2)
+        {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putString("FUNCVALUE0", Dfn0);
+            editor.putString("FUNCVALUE1", Dfn1);
+            editor.putString("FUNCVALUE2", Dfn2);
+            editor.putString("FUNCVALUE3", Dfn3);
+            editor.putString("FUNCVALUE4", Dfn4);
+            editor.putString("FUNCVALUE5", Dfn5);
+
+            editor.putString("FUNCLABEL0", fnLabelDefault0);
+            editor.putString("FUNCLABEL1", fnLabelDefault1);
+            editor.putString("FUNCLABEL2", fnLabelDefault2);
+            editor.putString("FUNCLABEL3", fnLabelDefault3);
+            editor.putString("FUNCLABEL4", fnLabelDefault4);
+            editor.putString("FUNCLABEL5", fnLabelDefault5);
+
+            editor.putBoolean("OUTPUTHEX", false);
+            editor.putBoolean("AUTOSCROLL", true);
+
+            editor.commit();
+        }
+    }
+
 
     @SuppressLint("HandlerLeak")
     public void onCreate(Bundle savedInstanceState)
