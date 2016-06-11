@@ -51,6 +51,7 @@ public class MainActivity extends Activity
 
     private BluetoothAdapter btAdaptor = null;
     private BluetoothDevice btDevice = null;
+    private BluetoothSocket btSocket = null;
 
     Button btn0;
     Button btn1;
@@ -438,17 +439,50 @@ public class MainActivity extends Activity
 
         return true;
     }
+
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:s");
+        String currentDateAndTime = sdf.format(new Date());
+
+        if (displayDateStamp)
+        {
+            mConnectedThread.writeHexNoWarning(10);
+            mConnectedThread.writeHexNoWarning(13);
+
+            mConnectedThread.writeNoWarning("Bluetooth Terminal Disconnected - " + currentDateAndTime);
+        }
+
+        try
+        {
+            btSocket.close();
+        }
+        catch (Exception e)
+        {
+            errorExit("Fatal Error", "In onPause() and failed to close socket. " + e.getMessage() + ".");
+        }
+    }
     
 
-    class ConnectedThread extends Thread
-    {
-        public void write (String s)
+    class ConnectedThread extends Thread {
+        public void write(String s) {
+
+        }
+
+        public void writeNoWarning (String s)
         {
 
         }
 
+        public void writeHex(int i) {
 
-        public void writeHex (int i)
+        }
+
+        public void writeHexNoWarning(int i)
         {
 
         }
