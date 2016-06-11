@@ -13,6 +13,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +23,8 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -162,6 +166,15 @@ public class MainActivity extends Activity
 
             editor.commit();
         }
+    }
+
+    public boolean onCreateOptionsMenu (Menu menu)
+    {
+        menu.add(0, 1, 1, "Settings");
+        menu.add(0, 2, 2, "Email Log");
+        menu.add(0, 3, 3, "About");
+
+        return true;
     }
 
 
@@ -388,6 +401,44 @@ public class MainActivity extends Activity
     }
 
 
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case 1:
+                Intent intent = new Intent();
+                intent.setClass(this, FunctionSettingActivity.class);
+                startActivityForResult(intent, 1);
+                break;
+            case 2:
+                SimpleDateFormat smf = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
+                String currentDateAndTime = smf.format(new Date());
+                String temp = dataReceived.getText().toString();
+
+                Intent i = new Intent ("android.intent.action.SEND");
+                i.setType("message/rfc822");
+                i.putExtra("android.intent.extra.EMAIL", "recipient@example.com");
+                i.putExtra("android.intent.extra.SUBJECT", "Bluetooth Terminal Log " + currentDateAndTime);
+                i.putExtra("android.intent.extra.TEXT", temp);
+
+                try {
+                    startActivity(Intent.createChooser(i, "Send mail.."));
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 3:
+                AboutDialog about = new AboutDialog(this);
+                about.setTitle("About");
+                about.show();
+                break;
+        }
+
+        return true;
+    }
+    
 
     class ConnectedThread extends Thread
     {
