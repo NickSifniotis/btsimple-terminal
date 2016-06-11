@@ -1,14 +1,24 @@
 package au.net.nicksifniotis.btsimpleterminal;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
@@ -81,12 +91,197 @@ public class MainActivity extends Activity
         Reverse engineering notes for MainActivity
 
         synthetic access$0 - access to method String convertStringToHex(String)
-        synthetic access$1 - access to method void AddMessage (String)
+        synthetic access$1 - access to method void addMessage (String)
         synthetic access$2 - access to field ConnectedThread mConnectedThread
 
      */
 
-    private void AddMessage (String msg)
+    @SuppressLint("HandlerLeak")
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btnSend = (Button)findViewById(R.id.buttonSend);
+        btnSendHex = (Button)findViewById(R.id.buttonSendHex);
+        btn0 = (Button)findViewById(R.id.button0);
+        btn1 = (Button)findViewById(R.id.button1);
+        btn2 = (Button)findViewById(R.id.button2);
+        btn3 = (Button)findViewById(R.id.button3);
+        btn4 = (Button)findViewById(R.id.button4);
+        btn5 = (Button)findViewById(R.id.button5);
+        btnCR = (Button)findViewById(R.id.buttonCR);
+        btnLF = (Button)findViewById(R.id.buttonLF);
+        dataClear = (Button)findViewById(R.id.buttonClear);
+        dataReceived = (TextView)findViewById(R.id.textView);
+        dataInput = (EditText)findViewById(R.id.editText1);
+        dataInputHex = (EditText)findViewById(R.id.editTextHex);
+
+        dataReceived.setMovementMethod(new ScrollingMovementMethod());
+
+        getWindow().setSoftInputMode(2);        // soft_input_mode_hidden
+
+        dataReceived.setText("");
+
+        handler = new Handler() {
+            /**
+             * I am not certain of the reverse engineering of this code. When decompiling
+             * messages passed into this handler, pay particular attention to the format
+             * of these messages.
+             *
+             * @param msg
+             */
+            public void handleMessage (Message msg) {
+                String readMessage = (String) msg.obj;
+
+                if (msg.what != 1)
+                    return;
+
+                if (msg.arg1 > 0)
+                {
+                    if (displayHex)
+                        readMessage = convertStringToHex(readMessage);
+
+                    addMessage(readMessage);
+                }
+            }
+        };
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                if (dataInput.getText().length() == 0)
+                    return;
+
+                mConnectedThread.write(dataInput.getText().toString());
+                Toast.makeText(getBaseContext(), "ASCII Data Sent", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnSendHex.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dataInputHex.getText().length() == 0)
+                    return;
+
+                String myString = "0x" + dataInputHex.getText().toString();
+                int myNum = Integer.decode(myString);
+                mConnectedThread.writeHex(myNum);
+                Toast.makeText(getBaseContext(), "Hex Data Sent", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+//    .line 96
+//        new-instance v0, Lwingood/bluetooth/btsimpleterminal/MainActivity$1;
+//
+//    invoke-direct {v0, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$1;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    iput-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->handler:Landroid/os/Handler;
+//
+//    .line 116
+//    invoke-static {}, Landroid/bluetooth/BluetoothAdapter;->getDefaultAdapter()Landroid/bluetooth/BluetoothAdapter;
+//
+//    move-result-object v0
+//
+//    iput-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btAdapter:Landroid/bluetooth/BluetoothAdapter;
+//
+//    .line 117
+//    invoke-direct {p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity;->checkBTState()V
+//
+
+
+
+//
+//    .line 142
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn0:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$4;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$4;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 147
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn1:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$5;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$5;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 153
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn2:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$6;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$6;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 159
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn3:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$7;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$7;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 165
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn4:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$8;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$8;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 171
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn5:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$9;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$9;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 177
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btnCR:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$10;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$10;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 183
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btnLF:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$11;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$11;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 189
+//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->dataClear:Landroid/widget/Button;
+//
+//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$12;
+//
+//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$12;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
+//
+//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+//
+//    .line 196
+//        return-void
+//    .end method
+
+
+
+    private void addMessage(String msg)
     {
         dataReceived.append(msg);
 
@@ -117,26 +312,66 @@ public class MainActivity extends Activity
         }
     }
 
-    private void errorExit (String s1, String s2)
-    {
 
+    private BluetoothSocket createBluetoothSocket (BluetoothDevice device) throws IOException
+    {
+        BluetoothSocket res = null;
+        BluetoothDevice p1 = device;
+
+        if (Build.VERSION.SDK_INT < 10)
+        {
+            res = device.createRfcommSocketToServiceRecord(MY_UUID);
+        }
+        else
+        {
+            try
+            {
+                Class<?> c = device.getClass();
+                Method m = c.getMethod("createInsecureRfcommSocketToServiceRecord", c);
+
+                res = (BluetoothSocket) m.invoke(p1, MY_UUID);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+        return res;
     }
 
 
+    private void errorExit (String title, String message)
+    {
+        Toast.makeText(getBaseContext(), new StringBuilder(title)
+                .append(" - ").append(message).toString(), Toast.LENGTH_LONG).show();
+
+        finish();
+    }
+
     private String convertStringToHex (String string)
     {
-        StringBuilder newString = new StringBuilder();
+        String newString = "";
         for (int i = 0; i < string.length(); i ++)
         {
-            newString.append(String.format("%x ", (byte)string.charAt(i)));
+            newString += (String.format("%x ", (byte)string.charAt(i)));
         }
 
-        return newString.toString();
+        return newString;
     }
 
 
 
     class ConnectedThread extends Thread
     {
+        public void write (String s)
+        {
+
+        }
+
+
+        public void writeHex (int i)
+        {
+
+        }
     }
 }
