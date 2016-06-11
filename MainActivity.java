@@ -147,6 +147,9 @@ public class MainActivity extends Activity
             }
         };
 
+        btAdaptor = BluetoothAdapter.getDefaultAdapter();
+        checkBTState();
+
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -171,115 +174,71 @@ public class MainActivity extends Activity
                 Toast.makeText(getBaseContext(), "Hex Data Sent", Toast.LENGTH_SHORT).show();
             }
         });
+
+        btn0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mConnectedThread.write(fn0);
+            }
+        });
+
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mConnectedThread.write(fn1);
+            }
+        });
+
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mConnectedThread.write(fn2);
+            }
+        });
+
+        btn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mConnectedThread.write(fn3);
+            }
+        });
+
+        btn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mConnectedThread.write(fn4);
+            }
+        });
+
+        btn5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mConnectedThread.write(fn5);
+            }
+        });
+
+        btnCR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mConnectedThread.writeHex(13);
+            }
+        });
+
+        btnLF.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mConnectedThread.writeHex(10);
+            }
+        });
+
+        dataClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataReceived.setText("");
+                Toast.makeText(getBaseContext(), "Terminal Window Cleared", Toast.LENGTH_SHORT);
+            }
+        });
     }
-
-//    .line 96
-//        new-instance v0, Lwingood/bluetooth/btsimpleterminal/MainActivity$1;
-//
-//    invoke-direct {v0, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$1;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    iput-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->handler:Landroid/os/Handler;
-//
-//    .line 116
-//    invoke-static {}, Landroid/bluetooth/BluetoothAdapter;->getDefaultAdapter()Landroid/bluetooth/BluetoothAdapter;
-//
-//    move-result-object v0
-//
-//    iput-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btAdapter:Landroid/bluetooth/BluetoothAdapter;
-//
-//    .line 117
-//    invoke-direct {p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity;->checkBTState()V
-//
-
-
-
-//
-//    .line 142
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn0:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$4;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$4;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 147
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn1:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$5;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$5;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 153
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn2:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$6;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$6;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 159
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn3:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$7;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$7;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 165
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn4:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$8;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$8;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 171
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btn5:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$9;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$9;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 177
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btnCR:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$10;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$10;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 183
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->btnLF:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$11;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$11;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 189
-//    iget-object v0, p0, Lwingood/bluetooth/btsimpleterminal/MainActivity;->dataClear:Landroid/widget/Button;
-//
-//    new-instance v1, Lwingood/bluetooth/btsimpleterminal/MainActivity$12;
-//
-//    invoke-direct {v1, p0}, Lwingood/bluetooth/btsimpleterminal/MainActivity$12;-><init>(Lwingood/bluetooth/btsimpleterminal/MainActivity;)V
-//
-//    invoke-virtual {v0, v1}, Landroid/widget/Button;->setOnClickListener(Landroid/view/View$OnClickListener;)V
-//
-//    .line 196
-//        return-void
-//    .end method
-
-
 
     private void addMessage(String msg)
     {
