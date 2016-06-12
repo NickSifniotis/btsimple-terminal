@@ -28,8 +28,14 @@ public class DeviceListActivity extends Activity
 
         mDeviceClickListener = new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TBA - DeviceListActivity$1
+            public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
+                textView1.setText("Connecting..");
+                String info = ((TextView)v).getText().toString();
+                String address = info.substring(info.length() - 11);
+
+                Intent i = new Intent(getBaseContext(), MainActivity.class);
+                i.putExtra(EXTRA_DEVICE_ADDRESS, address);
+                startActivity(i);
             }
         };
     }
