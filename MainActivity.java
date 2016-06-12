@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -469,22 +471,102 @@ public class MainActivity extends Activity
 
 
     class ConnectedThread extends Thread {
-        public void write(String s) {
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
 
-        }
 
-        public void writeNoWarning (String s)
+        public ConnectedThread (BluetoothSocket socket)
         {
+            super();
 
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            try
+            {
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
+            }
+            catch (Exception e)
+            {}
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
         }
 
-        public void writeHex(int i) {
 
+        @Override
+        public void run()
+        {
+            byte[] buffer = new byte[0x100];
+
+            while (true) {
+                try {
+                    int bytes = mmInStream.read(buffer);
+                    String readMessage = new String(buffer, 0, bytes);
+                    handler.obtainMessage(1, bytes, -1, readMessage).sendToTarget();
+                } catch (Exception e) {
+
+                }
+            }
         }
+
+
+        public void write(String message)
+        {
+            byte[] msgBuffer = message.getBytes();
+
+            try
+            {
+                mmOutStream.write(msgBuffer);
+            }
+            catch (Exception e)
+            {
+                finish();
+                Toast.makeText(getBaseContext(), "DEVICE UNAVAILABLE", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+        public void writeNoWarning (String message)
+        {
+            byte[] msgBuffer = message.getBytes();
+
+            try
+            {
+                mmOutStream.write(msgBuffer);
+            }
+            catch (Exception e)
+            {
+                finish();
+            }
+        }
+
+
+        public void writeHex(int i)
+        {
+            try
+            {
+                mmOutStream.write(i);
+            }
+            catch (Exception e)
+            {
+                finish();
+                Toast.makeText(getBaseContext(), "DEVICE UNAVAILABLE", Toast.LENGTH_SHORT).show();
+            }
+        }
+
 
         public void writeHexNoWarning(int i)
         {
-
+            try
+            {
+                mmOutStream.write(i);
+            }
+            catch (Exception e)
+            {
+                finish();
+            }
         }
     }
 }
