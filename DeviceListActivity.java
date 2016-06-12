@@ -2,6 +2,7 @@ package au.net.nicksifniotis.btsimpleterminal;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,8 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Set;
 
 /**
  * Created by nsifniotis on 12/06/16.
@@ -95,4 +99,36 @@ public class DeviceListActivity extends Activity
         return true;
     }
 
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        checkBTState();
+
+        textView1 = (TextView) findViewById(R.id.textView1);
+        textView1.setTextSize(40.0f);
+        textView1.setText("");
+
+        mPairedDevicesArrayAdaptor = new ArrayAdapter<String>(this, R.layout.device_name);
+
+        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
+        pairedListView.setAdapter(mPairedDevicesArrayAdaptor);
+        pairedListView.setOnItemClickListener(mDeviceClickListener);
+
+        mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+        Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+
+        if (pairedDevices.size() > 0)
+        {
+            // something gets its visibility set to zero here.
+            for (BluetoothDevice device: pairedDevices)
+                mPairedDevicesArrayAdaptor.add(device.getName() + "\n" + device.getAddress());
+        }
+        else
+        {
+            String noDevices = getResources().getText(R.string.none_paired).toString();
+            mPairedDevicesArrayAdaptor.add(noDevices);
+        }
+    }
 }
