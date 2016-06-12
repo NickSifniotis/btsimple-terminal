@@ -325,6 +325,89 @@ public class MainActivity extends Activity
         });
     }
 
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        SharedPreferences loadSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        fn0 = loadSharedPrefs.getString("FUNCVALUE0", "0");
+        fn1 = loadSharedPrefs.getString("FUNCVALUE1", "1");
+        fn2 = loadSharedPrefs.getString("FUNCVALUE2", "2");
+        fn3 = loadSharedPrefs.getString("FUNCVALUE3", "3");
+        fn4 = loadSharedPrefs.getString("FUNCVALUE4", "4");
+        fn5 = loadSharedPrefs.getString("FUNCVALUE5", "5");
+
+        fnLabel0 = loadSharedPrefs.getString("FUNCTEXT0", fnLabelDefault0);
+        fnLabel1 = loadSharedPrefs.getString("FUNCTEXT1", fnLabelDefault1);
+        fnLabel2 = loadSharedPrefs.getString("FUNCTEXT2", fnLabelDefault2);
+        fnLabel3 = loadSharedPrefs.getString("FUNCTEXT3", fnLabelDefault3);
+        fnLabel4 = loadSharedPrefs.getString("FUNCTEXT4", fnLabelDefault4);
+        fnLabel5 = loadSharedPrefs.getString("FUNCTEXT5", fnLabelDefault5);
+
+        displayDateStamp = loadSharedPrefs.getBoolean("CHECKBOX", true);
+        displayHex = loadSharedPrefs.getBoolean("OUTPUTHEX", false);
+        autoScroll = loadSharedPrefs.getBoolean("AUTOSCROLL", true);
+
+        btn0.setText(fnLabel0);
+        btn1.setText(fnLabel1);
+        btn2.setText(fnLabel2);
+        btn3.setText(fnLabel3);
+        btn4.setText(fnLabel4);
+        btn5.setText(fnLabel5);
+
+        Intent intent = getIntent();
+        macAddress = intent.getStringExtra(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+
+        BluetoothDevice device = btAdaptor.getRemoteDevice(macAddress);
+        try
+        {
+            btSocket = createBluetoothSocket(device);
+        }
+        catch (Exception e)
+        {
+            errorExit("Fatal Error", "In onResume() and socket create failed: " + e.getMessage() + ".");
+            return;
+        }
+
+        btAdaptor.cancelDiscovery();
+
+        try
+        {
+            btSocket.connect();
+        }
+        catch (Exception e)
+        {
+            try
+            {
+                btSocket.close();
+            }
+            catch (Exception e2)
+            {
+                errorExit ("Fatal Error", "In onResume() and unable to close socket during connection failure: " + e2.getMessage() + ".");
+            }
+        }
+
+        mConnectedThread = new ConnectedThread(btSocket);
+        mConnectedThread.start();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        String currentDateAndTime = sdf.format(new Date());
+        mConnectedThread.write ("");
+
+        if (displayDateStamp)
+        {
+            mConnectedThread.writeHexNoWarning(0xa);
+            mConnectedThread.writeHexNoWarning(0xd);
+            mConnectedThread.writeNoWarning("Bluetooth Terminal Connected - " + currentDateAndTime);
+            dataReceived.append("\n Bluetooth Terminal Connected - " + currentDateAndTime);
+            mConnectedThread.writeHexNoWarning(0xa);
+            mConnectedThread.writeHexNoWarning(0xd);
+        }
+    }
+
+
     private void addMessage(String msg)
     {
         dataReceived.append(msg);
