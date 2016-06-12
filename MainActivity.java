@@ -466,7 +466,7 @@ public class MainActivity extends Activity
             errorExit("Fatal Error", "In onPause() and failed to close socket. " + e.getMessage() + ".");
         }
     }
-    
+
 
     class ConnectedThread extends Thread {
         public void write(String s) {
